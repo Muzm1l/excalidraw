@@ -4,6 +4,7 @@
   "packageManager": "yarn@1.22.22",
   "workspaces": [
     "excalidraw-app",
+    "excalidraw-desktop",
     "packages/*",
     "examples/*"
   ],
@@ -52,6 +53,8 @@
     "build-node": "node ./scripts/build-node.js",
     "build:app:docker": "yarn --cwd ./excalidraw-app build:app:docker",
     "build:app": "yarn --cwd ./excalidraw-app build:app",
+    "build:desktop": "yarn --cwd ./excalidraw-desktop electron:dist",
+    "electron:dev": "yarn --cwd ./excalidraw-desktop electron:dev",
     "build:common": "yarn --cwd ./packages/common build:esm",
     "build:element": "yarn --cwd ./packages/element build:esm",
     "build:excalidraw": "yarn --cwd ./packages/excalidraw build:esm",

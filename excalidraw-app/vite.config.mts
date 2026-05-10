@@ -11,6 +11,26 @@ import { woff2BrowserPlugin } from "../scripts/woff2/woff2-vite-plugins";
 export default defineConfig(({ mode }) => {
   // To load .env variables
   const envVars = loadEnv(mode, `../`);
+  const isDesktop = envVars.VITE_APP_DESKTOP === "true";
+
+  const resolveAlias = [
+    ...(isDesktop
+      ? [
+          {
+            find: "virtual:pwa-register" as const,
+            replacement: path.resolve(__dirname, "pwa-register-stub.ts"),
+          },
+        ]
+      : []),
+    {
+      find: /^@excalidraw\/common$/,
+      replacement: path.resolve(
+        __dirname,
+        "../packages/common/src/index.ts",
+      ),
+    },
+  ];
+
   // https://vitejs.dev/config/
   return {
     server: {
@@ -21,15 +41,10 @@ export default defineConfig(({ mode }) => {
     // We need to specify the envDir since now there are no
     //more located in parallel with the vite.config.ts file but in parent dir
     envDir: "../",
+    base: isDesktop ? "./" : "/",
     resolve: {
       alias: [
-        {
-          find: /^@excalidraw\/common$/,
-          replacement: path.resolve(
-            __dirname,
-            "../packages/common/src/index.ts",
-          ),
-        },
+        ...resolveAlias,
         {
           find: /^@excalidraw\/common\/(.*?)/,
           replacement: path.resolve(__dirname, "../packages/common/src/$1"),
@@ -147,14 +162,17 @@ export default defineConfig(({ mode }) => {
       }),
       svgrPlugin(),
       ViteEjsPlugin(),
-      VitePWA({
-        registerType: "autoUpdate",
-        devOptions: {
-          /* set this flag to true to enable in Development mode */
-          enabled: envVars.VITE_APP_ENABLE_PWA === "true",
-        },
+      ...(isDesktop
+        ? []
+        : [
+            VitePWA({
+              registerType: "autoUpdate",
+              devOptions: {
+                /* set this flag to true to enable in Development mode */
+                enabled: envVars.VITE_APP_ENABLE_PWA === "true",
+              },
 
-        workbox: {
+              workbox: {
           // don't precache fonts, locales and separate chunks
           globIgnores: [
             "fonts.css",
@@ -308,7 +326,8 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-      }),
+            }),
+          ]),
       createHtmlPlugin({
         minify: true,
       }),
