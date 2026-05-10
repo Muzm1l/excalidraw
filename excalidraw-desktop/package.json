@@ -2,6 +2,7 @@
   "name": "excalidraw-desktop",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://excalidraw.com",
   "author": "Excalidraw contributors",
   "description": "Electron shell for Excalidraw (Linux desktop builds)",
   "main": "electron/main.cjs",
